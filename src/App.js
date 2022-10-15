@@ -1,20 +1,8 @@
-import logo from './logo.svg';
 import './App.css';
 import Button from '@mui/material/Button';
-import Drawer from '@mui/material/Drawer';
-import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import Grid2  from "@mui/material/Unstable_Grid2";
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import Grid2ViewRoundedIcon from '@mui/icons-material/GridViewRounded';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import RestoreRoundedIcon from '@mui/icons-material/RestoreRounded';
-import BookmarkRoundedIcon from '@mui/icons-material/BookmarkRounded';
-import MovieRoundedIcon from '@mui/icons-material/MovieRounded';
-import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
 import StarIcon from '@mui/icons-material/Star';
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -29,6 +17,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import SectionItems from './components/SectionItems.js';
 import Navbar from './components/Navbar.js';
 import Category from './components/Category.js';
+import { Link } from "react-router-dom";
 
 function App() {
 
@@ -40,6 +29,7 @@ function App() {
   const [action, setAction] = useState([])
   const [horror, setHorror] = useState([])
   const [scienceFiction, setScienceFiction] = useState([])
+  const [search, setSearch] = useState("")
 
   useEffect(()=>{
     const fetchPeople = async () => {
@@ -49,11 +39,9 @@ function App() {
         setTrending(data.results)
         const dataWeek = await Section.trendingWeek().json();
         dataWeek.results.splice(6)
-        console.log(dataWeek.results)
 
         setTrendingWeek(dataWeek.results)
         const genres = await Movies.genres().json();
-        console.log(genres)
         
         const action = await Section.action().json()
         action.results.splice(14)
@@ -72,6 +60,11 @@ function App() {
     fetchPeople()
   }, [])
 
+
+  function handleSearch(e){
+    setSearch(e.target.value)
+  }
+
   return (
     <Box sx={{display: "flex"}}>
       <CssBaseline/>
@@ -85,15 +78,17 @@ function App() {
           </Typography>
           <div style={{border: "1px solid #4E5166", borderRadius: "30px",  height: "50px", display: "flex", gap: "10px", alignItems: "center", padding: "10px"}}>
             <SearchIcon/>
-            <InputBase placeholder="Search"></InputBase>
+            <InputBase onSubmit={()=>console.log()} placeholder="Search"></InputBase>
           </div>
         </Grid2>
-        <Category icon={"🔥"} category="Trending" theme={theme}/>
-        <Category icon={"🔥"} category="Trending" theme={theme}/>              
-        <Category icon={"🔥"} category="Trending" theme={theme}/>              
-        <Category icon={"🔥"} category="Trending" theme={theme}/>              
-        <Category icon={"🔥"} category="Trending" theme={theme}/>              
-        <Category icon={"🔥"} category="Trending" theme={theme}/>              
+
+
+        <Category icon={""} href="#trending" category="Trending" theme={theme}/>
+        <Category link={"genre/movie/28"} icon={""} category="Action" theme={theme}/>              
+        <Category link={"genre/movie/35"} icon={""} category="Comedy" theme={theme}/>              
+        <Category link={"genre/movie/27"} icon={""} category="Horror" theme={theme}/>              
+        <Category link={"genre/movie/10749"} icon={""} category="Romance" theme={theme}/>              
+        <Category link={"genre/movie/878"} icon={""} category="Science Fiction" theme={theme}/>              
               
         <Grid2 item xs={12}>
           <Carousel fullHeightHover={true} autoPlay={false}  animation="slide">
@@ -108,7 +103,9 @@ function App() {
                   </div>
                   <div>
                     <div style={{paddingLeft: "25px", display: "flex", flexDirection: "row"}}>
-                      <Button startIcon={<PlayCircleRoundedIcon/>} variant="contained" style={{color: "white", fontWeight: "700", fontSize: "17px", padding: "10px 20px"}}>Watch now</Button>
+                      <Link to={`${item.media_type}/${item.id}`} style={{textDecoration: "none"}}>
+                        <Button startIcon={<PlayCircleRoundedIcon/>} variant="contained" style={{color: "white", fontWeight: "700", fontSize: "17px", padding: "10px 20px"}}>Watch now</Button>
+                      </Link>
                       <div style={isMobile? {display: "flex", flexDirection: "column", alignItems: "center", marginLeft: "auto", paddingRight: "25px"} : {display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "auto", paddingRight: "25px"}}>
                         <StarIcon color="primary" sx={{marginLeft: "15px", width: "20px"}}/>
                         <Typography variant="h3" style={{marginLeft: "2px", fontWeight: "400", fontSize: "17px", opacity: "0.7"}}>{item.vote_average ? <div>{item.vote_average.toFixed(2)}</div> : <>Na</>}</Typography>
@@ -123,11 +120,11 @@ function App() {
           </Carousel>
 
         </Grid2>
-        <Grid2 xs={12} sx={{display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "25px"}}>
+        <Grid2 xs={12}  sx={{display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "25px"}}>
           <Typography  variant="h2" sx={{fontWeight: "750", fontSize: "40px"}}>
             Trending
           </Typography>
-          <div>
+          <div id="trending">
             <Button color={theme.palette.mode === 'light' ? "secondary" : "primary"} sx={{opacity: 0.5, textTransform: "initial", fontSize: "16px"}} variant="defaut">See all &gt;</Button>
           </div>
         </Grid2>

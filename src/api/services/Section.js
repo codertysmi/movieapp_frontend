@@ -9,6 +9,5 @@ export default {
   action: () =>  ky.get("https://api.themoviedb.org/3/discover/movie?api_key=14934fb6a09f0b055249564415aa2dea&language=en-US&page=1&with_genres=28"),
   horror: () =>  ky.get("https://api.themoviedb.org/3/discover/movie?api_key=14934fb6a09f0b055249564415aa2dea&language=en-US&sort_by=popularity.desc&page=1&with_genres=27"),
   scienceFiction: () =>  ky.get("https://api.themoviedb.org/3/discover/movie?api_key=14934fb6a09f0b055249564415aa2dea&language=en-US&sort_by=popularity.desc&page=1&with_genres=878"),
-  details: (id) => client.get(`movie/${id}`),
-
+  search: (query) => ky.get(`https://api.themoviedb.org/3/search/multi?api_key=14934fb6a09f0b055249564415aa2dea&language=en-US&query=${query}&page=1`),
 };

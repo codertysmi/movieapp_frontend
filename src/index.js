@@ -10,6 +10,13 @@ import {
   Route,
 } from "react-router-dom";
 import Details from './components/Details.js';
+import Credits from './components/Credits.js';
+import ItemDetails from './components/ItemDetails.js';
+import Platforms from './components/Platforms.js';
+import Genre from './components/Genre.js';
+import NotFound from './components/NotFound.js';
+import Search from './components/Search.js';
+import Alert from '@mui/material/Alert';
 
  const theme =  createTheme({
   palette: {
@@ -33,7 +40,7 @@ import Details from './components/Details.js';
     },
   },
   shape: {
-    borderRadius: 20,
+    borderRadius: 32,
   },
 
   overrides: {
@@ -87,9 +94,19 @@ root.render(
       <Router>
         <Routes>
           <Route path="/" element={<App />}/>
-          <Route path="/movie" element={<Details />} />      
+          <Route path="/genre/:media_type/:genre/" element={<Genre />}/>
+          <Route path="/search/:query/" element={<Search />}/>
+          <Route path="/:media_type/:id/" element={<Details />}>
+            <Route path="" element={<Credits/>} />
+            <Route path="platforms" element={<Platforms/>}  />
+            <Route path="similar" element={<ItemDetails/>}  />
+          </Route>
+          <Route path="*" element={<NotFound />}/>
         </Routes>
       </Router>
+      <div  style={{position: "absolute", width: "50%", bottom: "8%"}}>
+      <Alert sx={{zIndex: 999, position: "fixed", width: "34%", left: "50%", marginLeft: "-250px"}} variant="filled" severity="warning">This is an active development version, nothing here isn't close to the final version.</Alert>
+      </div>
     </ThemeProvider>
   </React.StrictMode>
 );

@@ -1,57 +1,49 @@
 import Button from '@mui/material/Button';
-import Drawer from '@mui/material/Drawer';
-import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
 import Grid2  from "@mui/material/Unstable_Grid2";
-import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import Grid2ViewRoundedIcon from '@mui/icons-material/GridViewRounded';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import RestoreRoundedIcon from '@mui/icons-material/RestoreRounded';
-import BookmarkRoundedIcon from '@mui/icons-material/BookmarkRounded';
-import MovieRoundedIcon from '@mui/icons-material/MovieRounded';
-import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
 import StarIcon from '@mui/icons-material/Star';
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Carousel from 'react-material-ui-carousel'
 import CssBaseline from '@mui/material/CssBaseline';
-import InputBase from '@mui/material/InputBase';
 import { useEffect, useState } from 'react';
 import Navbar from './Navbar.js';
-import Section from '../api/services/Section.js';
-import { Grid } from '@mui/material';
 import PlayCircleRoundedIcon from '@mui/icons-material/PlayCircleRounded';
 import Movie from '../api/services/Movies.js';
-import Credit from './Credit.js';
+import { useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import {  useLocation } from "react-router-dom"
+import Tv from '../api/services/Tv.js';
+import { NavLink } from "react-router-dom";
 
-
-function Details() {
+const Details = ({ children }) => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [details, setDetails] = useState([])
   const [credits, setCredits] = useState([])
-
+  let { id, media_type } = useParams(); 
+  const location = useLocation()
   useEffect(()=>{
     const fetchPeople = async () => {
       try {
-        const data = await Section.details(629176).json();
-        setDetails(data)
+        if(media_type == "movie"){
+        const data = await Movie.details(id).json();
         console.log(data)
-        const credits = await Movie.credits(629176).json();
-        credits.cast.splice(16)
-        setCredits(credits.cast)
-        console.log(credits.cast)
+        setDetails(data)
+        } else if (media_type == "tv"){
+          const data = await Tv.details(id).json();
+          console.log(data)
+          setDetails(data)
+        }
       } catch (error) {
         // Handle API errors
         console.error(error);
       }
     };
     fetchPeople()
-  }, [])
+  }, [id])
 
   return (
     <Box sx={{display: "flex"}}>
@@ -79,16 +71,17 @@ function Details() {
                               <Typography  variant="h3" style={{fontWeight: "600", fontSize: "40px"}}>{details.title}{details.name}</Typography>
                               <div style={isMobile ? {display: "flex", flexDirection: "column", alignItems: "center", columnGap: "10px"} : {display: "flex", alignItems: "center", columnGap: "30px"}}>
                                 <Typography   variant="h3" style={{fontWeight: "400", fontSize: "18px", opacity: "0.7"}}>{details.release_date ? <div>{details.release_date}</div> : <></>}{details.first_air_date ? <div>{details.first_air_date}</div> : <></>}</Typography>
+                                {<Typography variant="h3" style={{fontWeight: "400", fontSize: "18px", opacity: "0.7", textTransform: "capitalize"}}>{media_type}</Typography>}
                                 {details.genres ? <div style={isMobile ? {display: "flex", flexDirection: "column", alignItems: "center", columnGap: "10px"} : {display: "flex", alignItems: "center", columnGap: "9px"}}>
                                 {details.genres.map((genre, index)=>{
                                   return(
-                                    <Typography variant="h3" style={{fontWeight: "400", fontSize: "18px", opacity: "0.7"}}>{genre.name}{index+1 < details.genres.length ? <>,</>: null}</Typography>
+                                    <Typography key={index} variant="h3" style={{fontWeight: "400", fontSize: "18px", opacity: "0.7"}}>{genre.name}{index+1 < details.genres.length ? <>,</>: null}</Typography>
                                   )
                                 })}
                                 </div>
                                 : <></>}
                                 {details.runtime ? <Typography variant="h3" style={{fontWeight: "400", fontSize: "18px", opacity: "0.7"}}>• {details.runtime} min</Typography> : <></>}
-                              
+
                               </div>
                               <div style={isMobile? {display: "flex", flexDirection: "column", alignItems: "center"} : {display: "flex", flexDirection: "row", alignItems: "center", marginTop: "15px"}}>
                                     <Paper style={theme.palette.mode === 'light' ? {backdropFilter: "blur(10px)", backgroundColor: "rgba(237, 234, 222, .2)",width: "40%", display: "flex", flexDirection: "row", alignItems: "center", margin: "5px", padding: "5px", columnGap: "5px", borderRadius: "12.5px"} : {backdropFilter: "blur(5px)", backgroundColor: "rgba(18, 18, 18, .4)", minWidth: "115px", width: "9%", display: "flex", flexDirection: "row", alignItems: "center", margin: "5px", padding: "5px", columnGap: "5px", borderRadius: "12.5px"}}>
@@ -107,16 +100,32 @@ function Details() {
                 </div>
           </div>
         </Grid2>
-        <Grid2 xs={12} sx={{ marginTop: "25px"}}>
-          <Typography  variant="h2" sx={{fontWeight: "750", fontSize: "40px"}}>
-            Credits
-          </Typography>
+        <Grid2 xs={12} sx={{ marginTop: "25px", display: "flex", columnGap: "20px", justifyContent: "center"}}>
+            <NavLink end to="" style={({ isActive }) => ({textDecoration:  "none", fontWeight: isActive ? 'bold' : 'normal', color: "white", backgroundColor: isActive ?  "#fb6340" : "rgba(27, 27, 27, 1)", borderRadius: 32})}>
+            <Button  variant="" elevation={0} style={{backgroundColor: "inherit", minWidth:"250px", width: "2%", height: "50px", display: "flex", columnGap: "20px", justifyContent: "center", alignItems: "center"}}>
+              <Typography  variant="h2" sx={{textTransform: "initial", fontSize: "20px", fontWeight: "inherit"}}>
+                Credits
+              </Typography>
+              </Button>
+            </NavLink>
+            <NavLink end to="platforms" style={({ isActive }) => ({textDecoration:  "none", fontWeight: isActive ? 'bold' : 'normal', color: "white", backgroundColor: isActive ?  "#fb6340" : "rgba(27, 27, 27, 1)", borderRadius: 32})}>
+              <Button variant="" elevation={0} style={{backgroundColor: "inherit", minWidth:"250px", width: "5%", height: "50px", display: "flex", columnGap: "20px", justifyContent: "center", alignItems: "center"}}>
+              <Typography  variant="h2" sx={{textTransform: "initial", fontSize: "20px", fontWeight: "inherit"}}>
+                Platforms
+              </Typography>
+            </Button>   
+            </NavLink>
+            <NavLink end to="similar" style={({ isActive }) => ({textDecoration:  "none", fontWeight: isActive ? 'bold' : 'normal', color: "white", backgroundColor: isActive ?  "#fb6340" : "rgba(27, 27, 27, 1)", borderRadius: 32})}>
+              <Button variant="" elevation={0} style={{backgroundColor: "inherit", minWidth:"250px", width: "5%", height: "50px", display: "flex", columnGap: "20px", justifyContent: "center", alignItems: "center"}}>
+              <Typography  variant="h2" sx={{textTransform: "initial", fontSize: "20px", fontWeight: "inherit"}}>
+                Similar
+              </Typography>
+            </Button>   
+            </NavLink>
         </Grid2>
-            {credits.map((credit)=>{return(
-              <Grid2 item xs={12} sm={6} md={4} lg={1.8} xl={1.5}>
-                <Credit key={credit.id} title={credit.character} name={credit.name} poster_path={credit.profile_path} id={credit.id}/>
-              </Grid2>
-            )})}
+        <Grid2 item xs={12}>
+          <Outlet />
+        </Grid2>
       </Grid2>
         
     </Box>
